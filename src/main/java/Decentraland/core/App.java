@@ -90,8 +90,11 @@ public class App
     	
     	System.out.println("Valid Contract: " + mc.isValid());
     	
+    	System.out.println("Accepted Token: " + mc.acceptedToken().send());
     	
+    	System.out.println("Paused: " + mc.paused());
     	
+    	System.out.println("Owner: " + mc.owner());
     	
     	DefaultBlockParameterNumber startBlock = new DefaultBlockParameterNumber(5573688);
     	
