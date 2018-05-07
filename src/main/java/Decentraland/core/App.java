@@ -14,6 +14,7 @@ import org.web3j.protocol.core.DefaultBlockParameterNumber;
 import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tx.ClientTransactionManager;
 
 import Decentaland.contract.Marketplace;
 import rx.Subscription;
@@ -52,6 +53,7 @@ public class App
     	System.out.println("Current Block: " + web.ethBlockNumber().send().getBlockNumber());
     	
     	
+    	
 
     	marketplace(web);
     	
@@ -80,11 +82,13 @@ public class App
     	String source = "C:\\Program Files\\Geth\\UTC--2018-05-07T02-14-27.742326100Z--f788a15e19790ebe4edd0c84fa5eb4398ca4370a";
     	Credentials credentials = WalletUtils.loadCredentials(password, source);
     	
+    	//Erc20TokenWrapper mana = Erc20TokenWrapper.
     	String contract = "0xB3BCa6F5052c7e24726b44da7403b56A8A1b98f8";
+
     	
     	Marketplace mc = Marketplace.load(contract, web, credentials, gasPrice, gasLimit);
     	
-    	
+    	System.out.println("Valid Contract: " + mc.isValid());
     	
     	DefaultBlockParameterNumber startBlock = new DefaultBlockParameterNumber(5572108);
     	
