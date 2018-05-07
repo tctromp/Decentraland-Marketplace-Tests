@@ -36,7 +36,7 @@ public class App
     
     public App() throws Exception{
     	
-    	Web3j web = Web3j.build(new HttpService("http://192.168.1.11:8545")); 
+    	Web3j web = Web3j.build(new HttpService("http://localhost:8545")); 
     	
     	Web3ClientVersion clientVersion = web.web3ClientVersion().send();
     	
@@ -64,9 +64,9 @@ public class App
     }  
     
     public void logBlocks(Web3j web){
-    	Subscription sub = web.blockObservable(false).subscribe(block -> {
+    	Subscription sub = web.blockObservable(false).subscribe(block -> {    		
     		
-    		System.out.println("Block: " + block.getBlock().getNumber());
+    		System.out.println("New Block: " + block.getBlock().getNumber());
     		
     	});
     }
@@ -83,23 +83,34 @@ public class App
     	
     	//Marketplace mc = Marketplace.load(contract, web, credentials, gasPrice, gasLimit);
     	
-    	Event event = Marketplace.AUCTIONCANCELLED_EVENT;
     	
-    	EthFilter filter = new EthFilter(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST, contract);
+    	EthFilter auctionCalcelledFilter = new EthFilter(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST, contract)   	
+    			.addSingleTopic(EventEncoder.encode(Marketplace.AUCTIONCANCELLED_EVENT));   	
     	
-    	filter.addSingleTopic(EventEncoder.encode(event));
+    	web.ethLogObservable(auctionCalcelledFilter).subscribe(log -> {   		
+    		System.out.println("Auction Cancelled.");
+    		System.out.println("Tx Hash: " + log.getTransactionHash());    		
+    	});    	
     	
-    	web.ethLogObservable(filter).subscribe(log -> {
-    		
-    		SimpleDateFormat sdt = new SimpleDateFormat(); 
-    		
-    		
-    		System.out.println("Auction Calcelled.");
-    		System.out.println("Tx Hash: " + log.getTransactionHash());
-    		
-    		
-    		
+    	
+    	EthFilter auctionCreatedFilter = new EthFilter(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST, contract)
+    			.addSingleTopic(EventEncoder.encode(Marketplace.AUCTIONCREATED_EVENT));
+    	
+    	web.ethLogObservable(auctionCreatedFilter).subscribe(log -> {   		
+    		System.out.println("Auction Created.");
+    		System.out.println("Tx Hash: " + log.getTransactionHash());    		
     	});
+    	
+    	
+    	EthFilter auctionSuccessfulFilter = new EthFilter(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST, contract)
+    			.addSingleTopic(EventEncoder.encode(Marketplace.AUCTIONSUCCESSFUL_EVENT));
+    	
+    	web.ethLogObservable(auctionSuccessfulFilter).subscribe(log -> {   		
+    		System.out.println("Auction Successful.");
+    		System.out.println("Tx Hash: " + log.getTransactionHash());    		
+    	});
+    	
+    	
     }
     
 }
