@@ -10,6 +10,7 @@ import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.DefaultBlockParameterNumber;
 import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
@@ -84,7 +85,11 @@ public class App
     	//Marketplace mc = Marketplace.load(contract, web, credentials, gasPrice, gasLimit);
     	
     	
-    	EthFilter auctionCalcelledFilter = new EthFilter(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST, contract)   	
+    	
+    	DefaultBlockParameterNumber start = new DefaultBlockParameterNumber(5566655);
+    	
+    	
+    	EthFilter auctionCalcelledFilter = new EthFilter(start, DefaultBlockParameterName.LATEST, contract)   	
     			.addSingleTopic(EventEncoder.encode(Marketplace.AUCTIONCANCELLED_EVENT));   	
     	
     	web.ethLogObservable(auctionCalcelledFilter).subscribe(log -> {   		
@@ -93,7 +98,7 @@ public class App
     	});    	
     	
     	
-    	EthFilter auctionCreatedFilter = new EthFilter(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST, contract)
+    	EthFilter auctionCreatedFilter = new EthFilter(start, DefaultBlockParameterName.LATEST, contract)
     			.addSingleTopic(EventEncoder.encode(Marketplace.AUCTIONCREATED_EVENT));
     	
     	web.ethLogObservable(auctionCreatedFilter).subscribe(log -> {   		
@@ -102,7 +107,7 @@ public class App
     	});
     	
     	
-    	EthFilter auctionSuccessfulFilter = new EthFilter(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST, contract)
+    	EthFilter auctionSuccessfulFilter = new EthFilter(start, DefaultBlockParameterName.LATEST, contract)
     			.addSingleTopic(EventEncoder.encode(Marketplace.AUCTIONSUCCESSFUL_EVENT));
     	
     	web.ethLogObservable(auctionSuccessfulFilter).subscribe(log -> {   		
