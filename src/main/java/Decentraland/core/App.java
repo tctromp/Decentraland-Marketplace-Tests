@@ -73,33 +73,32 @@ public class App
     }
     
     public void marketplace(Web3j web) throws Exception{
-    	//BigInteger gasPrice = new BigInteger("2");
-    	//BigInteger gasLimit = new BigInteger("21000");
+    	BigInteger gasPrice = new BigInteger("2");
+    	BigInteger gasLimit = new BigInteger("21000");
     	
-    	//String password = "FAoFI6qCwNW1KBGKsHwA";
-    	//String source = "C:\\Program Files\\Geth\\UTC--2018-05-07T02-14-27.742326100Z--f788a15e19790ebe4edd0c84fa5eb4398ca4370a";
-    	//Credentials credentials = WalletUtils.loadCredentials(password, source);
+    	String password = "FAoFI6qCwNW1KBGKsHwA";
+    	String source = "C:\\Program Files\\Geth\\UTC--2018-05-07T02-14-27.742326100Z--f788a15e19790ebe4edd0c84fa5eb4398ca4370a";
+    	Credentials credentials = WalletUtils.loadCredentials(password, source);
     	
     	String contract = "0xb3bca6f5052c7e24726b44da7403b56a8a1b98f8";
     	
-    	//Marketplace mc = Marketplace.load(contract, web, credentials, gasPrice, gasLimit);
+    	Marketplace mc = Marketplace.load(contract, web, credentials, gasPrice, gasLimit);
     	
     	
     	
-    	DefaultBlockParameterNumber start = new DefaultBlockParameterNumber(5572108);
+    	DefaultBlockParameterNumber startBlock = new DefaultBlockParameterNumber(5572108);
     	
-    	DefaultBlockParameterNumber end = new DefaultBlockParameterNumber(5572856);
+    	DefaultBlockParameterNumber endBlock = new DefaultBlockParameterNumber(5572856);
 
-    	EthFilter auctionCalcelledFilter = new EthFilter(start, end, contract)   	
-    			.addSingleTopic(EventEncoder.encode(Marketplace.AUCTIONCANCELLED_EVENT));   	
-    	
-    	
-    	
-    	web.ethLogObservable(auctionCalcelledFilter).subscribe(log -> {   		
+
+    	mc.auctionCancelledEventObservable(startBlock, endBlock).subscribe(log -> {
     		System.out.println("Auction Cancelled.");
-    		System.out.println("Tx Hash: " + log.getTransactionHash());    		
-    	});    	
+    		System.out.println("Seller: " + log.seller);
+    		System.out.println("Asset Id: " + log.assetId);
+    	});
     	
+   	
+    	/*
     	
     	EthFilter auctionCreatedFilter = new EthFilter(start, end, contract)
     			.addSingleTopic(EventEncoder.encode(Marketplace.AUCTIONCREATED_EVENT));
@@ -118,7 +117,7 @@ public class App
     		System.out.println("Tx Hash: " + log.getTransactionHash());    		
     	});
     	
-    	
+    	*/
     }
     
 }
