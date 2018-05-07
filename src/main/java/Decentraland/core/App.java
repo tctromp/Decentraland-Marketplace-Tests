@@ -86,11 +86,14 @@ public class App
     	
     	
     	
-    	DefaultBlockParameterNumber start = new DefaultBlockParameterNumber(5566655);
+    	DefaultBlockParameterNumber start = new DefaultBlockParameterNumber(5572108);
     	
-    	
-    	EthFilter auctionCalcelledFilter = new EthFilter(start, DefaultBlockParameterName.LATEST, contract)   	
+    	DefaultBlockParameterNumber end = new DefaultBlockParameterNumber(5572856);
+
+    	EthFilter auctionCalcelledFilter = new EthFilter(start, end, contract)   	
     			.addSingleTopic(EventEncoder.encode(Marketplace.AUCTIONCANCELLED_EVENT));   	
+    	
+    	
     	
     	web.ethLogObservable(auctionCalcelledFilter).subscribe(log -> {   		
     		System.out.println("Auction Cancelled.");
@@ -98,7 +101,7 @@ public class App
     	});    	
     	
     	
-    	EthFilter auctionCreatedFilter = new EthFilter(start, DefaultBlockParameterName.LATEST, contract)
+    	EthFilter auctionCreatedFilter = new EthFilter(start, end, contract)
     			.addSingleTopic(EventEncoder.encode(Marketplace.AUCTIONCREATED_EVENT));
     	
     	web.ethLogObservable(auctionCreatedFilter).subscribe(log -> {   		
@@ -107,7 +110,7 @@ public class App
     	});
     	
     	
-    	EthFilter auctionSuccessfulFilter = new EthFilter(start, DefaultBlockParameterName.LATEST, contract)
+    	EthFilter auctionSuccessfulFilter = new EthFilter(start, end, contract)
     			.addSingleTopic(EventEncoder.encode(Marketplace.AUCTIONSUCCESSFUL_EVENT));
     	
     	web.ethLogObservable(auctionSuccessfulFilter).subscribe(log -> {   		
