@@ -80,7 +80,7 @@ public class App
     	//String source = "C:\\Program Files\\Geth\\UTC--2018-05-07T02-14-27.742326100Z--f788a15e19790ebe4edd0c84fa5eb4398ca4370a";
     	//Credentials credentials = WalletUtils.loadCredentials(password, source);
     	
-    	String contract = "0xB3BCa6F5052c7e24726b44da7403b56A8A1b98f8";
+    	String contract = "0xb3bca6f5052c7e24726b44da7403b56a8a1b98f8";
     	
     	//Marketplace mc = Marketplace.load(contract, web, credentials, gasPrice, gasLimit);
     	
