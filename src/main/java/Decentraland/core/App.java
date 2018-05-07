@@ -93,15 +93,22 @@ public class App
     	
     	
     	
-    	DefaultBlockParameterNumber startBlock = new DefaultBlockParameterNumber(5572108);
+    	DefaultBlockParameterNumber startBlock = new DefaultBlockParameterNumber(5573688);
     	
     	DefaultBlockParameterNumber endBlock = new DefaultBlockParameterNumber(5572856);
 
 
-    	mc.auctionCancelledEventObservable(startBlock, endBlock).subscribe(log -> {
+    	mc.auctionCancelledEventObservable(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST).subscribe(log -> {
     		System.out.println("Auction Cancelled.");
     		System.out.println("Seller: " + log.seller);
     		System.out.println("Asset Id: " + log.assetId);
+    	});
+    	
+    	mc.auctionCreatedEventObservable(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST).subscribe(log -> {
+    		System.out.println("Auction Created.");
+    		System.out.println("Seller: " + log.seller);
+    		System.out.println("Asset Id: " + log.assetId);
+    		
     	});
     	
    	
