@@ -1,6 +1,5 @@
 package Decentraland.core;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 
@@ -116,19 +115,44 @@ public class App
     	
     	DefaultBlockParameterNumber startBlock = new DefaultBlockParameterNumber(5545157);
     	
-    	DefaultBlockParameterNumber endBlock = new DefaultBlockParameterNumber(5545157);
+    	DefaultBlockParameterName endBlock = DefaultBlockParameterName.LATEST;
 
     	
     	
-
+    	EthFilter auctionCreatedFilter = new EthFilter(startBlock, endBlock, contract)
+    			.addSingleTopic(MarketplaceEvents.AUCTIONCREATED.getEvent());
+    	
+    	/*
+    	web.ethLogObservable(auctionCreatedFilter).subscribe(log -> {   		
+    		System.out.println("Auction Created.");
+    		System.out.println("Tx Hash: " + log.getTransactionHash());    		
+    		
+    	});
+    	*/
+    	  	
+    	mc.auctionCreatedEventObservable(auctionCreatedFilter).subscribe(log -> {
+	
+    		System.out.println("LOL?");
+    	});    	
+    	
+    	/*
+    	mc.auctionSuccessfulEventObservable(startBlock, endBlock).subscribe(onNext -> {
+    		System.out.println("\nAuction Sucessful.");
+    		System.out.println("Winner: " + onNext.winner.toString());
+    		System.out.println("Price: " + new BigDecimal(onNext.totalPrice.toString()).divide(new BigDecimal("1000000000000000000")));
+    		
+    	});
+    	*/
     	
     	
+    	
+    	/*
     	mc.auctionSuccessfulEventObservable(startBlock, DefaultBlockParameterName.LATEST).subscribe(onNext -> {
     		System.out.println("\nAuction Sucessful.");
     		System.out.println("Winner: " + onNext.winner.toString());
     		System.out.println("Price: " + new BigDecimal(onNext.totalPrice.toString()).divide(new BigDecimal("1000000000000000000")));
     	});
-    	
+    	*/
     	
     	/*
     	Subscription sub = mc.auctionCancelledEventObservable(startBlock, DefaultBlockParameterName.LATEST).subscribe(onNext -> {

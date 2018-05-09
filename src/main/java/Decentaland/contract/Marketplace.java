@@ -80,14 +80,22 @@ public class Marketplace extends Contract {
     public static final String FUNC_DESTROYANDSEND = "destroyAndSend";
 
     public static final Event AUCTIONCREATED_EVENT = new Event("AuctionCreated", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}, new TypeReference<Address>() {}),
-            Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint256>() {}));
+
+    		Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint256>() {}),
+
+    		Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}, new TypeReference<Address>() {}));
+
+
+    
+
     ;
 
     public static final Event AUCTIONSUCCESSFUL_EVENT = new Event("AuctionSuccessful", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}, new TypeReference<Uint256>() {}, new TypeReference<Address>() {}),
-            Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}, new TypeReference<Uint256>() {}));
-    ;
+            Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}, new TypeReference<Uint256>() {}),
+
+            Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}, new TypeReference<Uint256>() {}, new TypeReference<Address>() {}));
+    
+            ;
 
     public static final Event AUCTIONCANCELLED_EVENT = new Event("AuctionCancelled", 
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}, new TypeReference<Address>() {}),
@@ -302,7 +310,7 @@ public class Marketplace extends Contract {
         return web3j.ethLogObservable(filter).map(new Func1<Log, AuctionCreatedEventResponse>() {
             @Override
             public AuctionCreatedEventResponse call(Log log) {
-                EventValuesWithLog eventValues = extractEventParametersWithLogs(AUCTIONCREATED_EVENT, log);
+                EventValuesWithLog eventValues = extractEventParametersWithLog(AUCTIONCREATED_EVENT, log);
                 AuctionCreatedEventResponse typedResponse = new AuctionCreatedEventResponse();
                 typedResponse.log = log;
                 typedResponse.assetId = (BigInteger) eventValues.getIndexedValues().get(0).getValue();
@@ -341,7 +349,7 @@ public class Marketplace extends Contract {
         return web3j.ethLogObservable(filter).map(new Func1<Log, AuctionSuccessfulEventResponse>() {
             @Override
             public AuctionSuccessfulEventResponse call(Log log) {
-                EventValuesWithLog eventValues = extractEventParametersWithLogs(AUCTIONSUCCESSFUL_EVENT, log);
+                EventValuesWithLog eventValues = extractEventParametersWithLog(AUCTIONSUCCESSFUL_EVENT, log);
                 AuctionSuccessfulEventResponse typedResponse = new AuctionSuccessfulEventResponse();
                 typedResponse.log = log;
                 typedResponse.assetId = (BigInteger) eventValues.getIndexedValues().get(0).getValue();
@@ -379,7 +387,7 @@ public class Marketplace extends Contract {
             @Override
             public AuctionCancelledEventResponse call(Log log) {
             	//System.out.println("auctionCancelledEventObservable: 1");
-                EventValuesWithLog eventValues = extractEventParametersWithLogs(AUCTIONCANCELLED_EVENT, log);
+                EventValuesWithLog eventValues = extractEventParametersWithLog(AUCTIONCANCELLED_EVENT, log);
                 
                 
                 //System.out.println("auctionCancelledEventObservable: 2");
@@ -404,78 +412,7 @@ public class Marketplace extends Contract {
         });
     }
     
-    EventValuesWithLog extractEventParametersWithLogs(Event event, Log log) {
-        final EventValues eventValues = staticExtractEventParameters(event, log);
-        return (eventValues == null) ? null : new EventValuesWithLog(eventValues, log);
-    }
-    
-    public static class EventValuesWithLog{
-        private final EventValues eventValues;
-        private final Log log;
 
-        private EventValuesWithLog(EventValues eventValues, Log log) {
-            this.eventValues = eventValues;
-            this.log = log;
-        }
-
-        public List<Type> getIndexedValues() {
-            return eventValues.getIndexedValues();
-        }
-
-        public List<Type> getNonIndexedValues() {
-            return eventValues.getNonIndexedValues();
-        }
-
-        public Log getLog() {
-            return log;
-        }
-    }
-   
-   
-    public static EventValues staticExtractEventParameters(Event event, Log log) {
-
-        List<String> topics = log.getTopics();
-        
-        /*
-            Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
-            
-            Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}, new TypeReference<Address>() {}),
-            Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint256>() {}));
-            
-            
-         */
-        
-        List<TypeReference<?>> nonIndexed = new ArrayList<TypeReference<?>> ();
-        List<TypeReference<?>> indexed =  new ArrayList<TypeReference<?>> ();
-        
-        
-        for(TypeReference ref : event.getNonIndexedParameters()) {
-            nonIndexed.add(ref);
-        }
-        
-        for(TypeReference ref : event.getIndexedParameters()) {
-        	indexed.add(ref);
-        }
-        
-        String encodedEventSignature = EventEncoder.encode(new Event(event.getName(), indexed, nonIndexed));
-        System.out.println(encodedEventSignature);
-        if (!topics.get(0).equals(encodedEventSignature)) {
-
-            return null;
-        }
-
-        List<Type> indexedValues = new ArrayList<>();
-        List<Type> nonIndexedValues = FunctionReturnDecoder.decode(
-                log.getData(), event.getNonIndexedParameters());
-
-        List<TypeReference<Type>> indexedParameters = event.getIndexedParameters();
-        for (int i = 0; i < indexedParameters.size(); i++) {
-            Type value = FunctionReturnDecoder.decodeIndexedValue(
-                    topics.get(i + 1), indexedParameters.get(i));
-            indexedValues.add(value);
-        }
-        return new EventValues(indexedValues, nonIndexedValues);
-    }
 
     public Observable<AuctionCancelledEventResponse> auctionCancelledEventObservable(DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
         EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
@@ -499,7 +436,7 @@ public class Marketplace extends Contract {
         return web3j.ethLogObservable(filter).map(new Func1<Log, ChangedPublicationFeeEventResponse>() {
             @Override
             public ChangedPublicationFeeEventResponse call(Log log) {
-                EventValuesWithLog eventValues = extractEventParametersWithLogs(CHANGEDPUBLICATIONFEE_EVENT, log);
+                EventValuesWithLog eventValues = extractEventParametersWithLog(CHANGEDPUBLICATIONFEE_EVENT, log);
                 ChangedPublicationFeeEventResponse typedResponse = new ChangedPublicationFeeEventResponse();
                 typedResponse.log = log;
                 typedResponse.publicationFee = (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
@@ -530,7 +467,7 @@ public class Marketplace extends Contract {
         return web3j.ethLogObservable(filter).map(new Func1<Log, ChangedOwnerCutEventResponse>() {
             @Override
             public ChangedOwnerCutEventResponse call(Log log) {
-                EventValuesWithLog eventValues = extractEventParametersWithLogs(CHANGEDOWNERCUT_EVENT, log);
+                EventValuesWithLog eventValues = extractEventParametersWithLog(CHANGEDOWNERCUT_EVENT, log);
                 ChangedOwnerCutEventResponse typedResponse = new ChangedOwnerCutEventResponse();
                 typedResponse.log = log;
                 typedResponse.ownerCut = (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
@@ -560,7 +497,7 @@ public class Marketplace extends Contract {
         return web3j.ethLogObservable(filter).map(new Func1<Log, PauseEventResponse>() {
             @Override
             public PauseEventResponse call(Log log) {
-                EventValuesWithLog eventValues = extractEventParametersWithLogs(PAUSE_EVENT, log);
+                EventValuesWithLog eventValues = extractEventParametersWithLog(PAUSE_EVENT, log);
                 PauseEventResponse typedResponse = new PauseEventResponse();
                 typedResponse.log = log;
                 return typedResponse;
@@ -589,7 +526,7 @@ public class Marketplace extends Contract {
         return web3j.ethLogObservable(filter).map(new Func1<Log, UnpauseEventResponse>() {
             @Override
             public UnpauseEventResponse call(Log log) {
-                EventValuesWithLog eventValues = extractEventParametersWithLogs(UNPAUSE_EVENT, log);
+                EventValuesWithLog eventValues = extractEventParametersWithLog(UNPAUSE_EVENT, log);
                 UnpauseEventResponse typedResponse = new UnpauseEventResponse();
                 typedResponse.log = log;
                 return typedResponse;
@@ -620,7 +557,7 @@ public class Marketplace extends Contract {
         return web3j.ethLogObservable(filter).map(new Func1<Log, OwnershipTransferredEventResponse>() {
             @Override
             public OwnershipTransferredEventResponse call(Log log) {
-                EventValuesWithLog eventValues = extractEventParametersWithLogs(OWNERSHIPTRANSFERRED_EVENT, log);
+                EventValuesWithLog eventValues = extractEventParametersWithLog(OWNERSHIPTRANSFERRED_EVENT, log);
                 OwnershipTransferredEventResponse typedResponse = new OwnershipTransferredEventResponse();
                 typedResponse.log = log;
                 typedResponse.previousOwner = (String) eventValues.getIndexedValues().get(0).getValue();
