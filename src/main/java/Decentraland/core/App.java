@@ -1,11 +1,16 @@
 package Decentraland.core;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import org.web3j.abi.EventValues;
+import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.Event;
+import org.web3j.abi.datatypes.Type;
 import org.web3j.abi.datatypes.generated.Bytes32;
 import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.Credentials;
@@ -14,6 +19,7 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.DefaultBlockParameterNumber;
 import org.web3j.protocol.core.methods.request.EthFilter;
+import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
 
@@ -130,8 +136,16 @@ public class App
     	});
     	*/
     	  	
-    	mc.auctionCreatedEventObservable(auctionCreatedFilter).subscribe(log -> {
+        final Event AUCTIONCREATED_EVENT = new Event("AuctionCreated", 
+        		Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint256>() {}),
+        		Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}, new TypeReference<Address>() {}));
+
+
+    	
+    	web.ethLogObservable(auctionCreatedFilter).subscribe(log -> {
 	
+    		EventValues values = staticExtractEventParameters(AUCTIONCREATED_EVENT, log);
+    		
     		System.out.println("LOL?");
     	});    	
     	
@@ -142,8 +156,7 @@ public class App
     		System.out.println("Price: " + new BigDecimal(onNext.totalPrice.toString()).divide(new BigDecimal("1000000000000000000")));
     		
     	});
-    	*/
-    	
+    	*/    	
     	
     	
     	/*
@@ -215,6 +228,21 @@ public class App
     	});
     	
     	*/
+    }
+    
+    public static EventValues staticExtractEventParameters(Event event, Log log) {
+
+        List<String> topics = log.getTopics();
+
+        List<Type> indexedValues = new ArrayList<>();
+        List<Type> nonIndexedValues = FunctionReturnDecoder.decode(log.getData(), event.getNonIndexedParameters());
+
+        List<TypeReference<Type>> indexedParameters = event.getIndexedParameters();
+        for (int i = 0; i < indexedParameters.size(); i++) {
+            Type value = FunctionReturnDecoder.decodeIndexedValue(topics.get(i + 1), indexedParameters.get(i));
+            indexedValues.add(value);
+        }
+        return new EventValues(indexedValues, nonIndexedValues);
     }
     
 }
